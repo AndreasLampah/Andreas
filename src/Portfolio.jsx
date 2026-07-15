@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { FaGithub, FaLinkedin, FaCheck, FaCopy } from "react-icons/fa";
+import {
+  FaGithub,
+  FaLinkedin,
+  FaCheck,
+  FaCopy,
+  FaBars,
+  FaTimes,
+} from "react-icons/fa";
 import profilAndreas from "./assets/profilAndreas.png";
 
 import { MdEmail, MdLocationOn } from "react-icons/md";
@@ -135,6 +142,7 @@ function CopyButton({ text }) {
 }
 
 export default function Portfolio() {
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <div className="page">
       <style>{`
@@ -170,14 +178,30 @@ export default function Portfolio() {
         .eyebrow{ font-family:var(--mono); font-size:15.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent); margin-bottom:10px; display:block; }
 
         nav{ position:sticky; top:0; z-index:50; background:rgba(11,17,32,0.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); }
-        nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; }
+        nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; flex-wrap:wrap; }
         .logo{ font-weight:800; font-size:16px; }
         .logo span{ color:var(--accent); }
         .navlinks{ display:flex; gap:26px; font-size:14px; color:var(--muted); }
         .navlinks a:hover{ color:var(--text); }
-        @media (max-width:640px){ .navlinks{ display:none; } }
         .status-pill{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); border:1px solid var(--border); padding:6px 13px; border-radius:20px; }
         .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); }
+
+        .nav-toggle{ display:none; }
+        @media (max-width:640px){
+          nav .wrap{ flex-wrap:wrap; row-gap:10px; padding-top:12px; padding-bottom:12px; height:auto; }
+          .logo{ order:1; }
+          .status-pill{ order:2; }
+          .nav-toggle{
+            display:flex; align-items:center; justify-content:center;
+            gap:8px; width:100%; order:3;
+            padding:10px 0; border-radius:8px;
+            border:1px solid var(--border); background:transparent; color:var(--text);
+            cursor:pointer; font-size:13px; font-weight:600;
+          }
+          .nav-toggle:hover{ border-color:var(--accent); color:var(--accent); }
+          .navlinks{ display:none; flex-direction:column; align-items:center; gap:14px; width:100%; order:4; padding:14px 0 4px; }
+          .navlinks.open{ display:flex; }
+        }
 
         .hero{ padding:84px 0 60px; }
         .hero-grid{ display:grid; grid-template-columns:auto 1fr; gap:36px; align-items:center; }
@@ -262,9 +286,9 @@ export default function Portfolio() {
           <div className="logo">
             Andreas<span>.</span>
           </div>
-          <div className="navlinks">
+          <div className={`navlinks ${menuOpen ? "open" : ""}`}>
             {NAV.map((n) => (
-              <a key={n.href} href={n.href}>
+              <a key={n.href} href={n.href} onClick={() => setMenuOpen(false)}>
                 {n.label}
               </a>
             ))}
@@ -272,6 +296,15 @@ export default function Portfolio() {
           <div className="status-pill">
             <span className="dot" /> Open to new opportunities
           </div>
+          <button
+            className="nav-toggle"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+          >
+            {menuOpen ? <FaTimes size={14} /> : <FaBars size={14} />}
+            {menuOpen ? "Close" : "Menu"}
+          </button>
         </div>
       </nav>
 
