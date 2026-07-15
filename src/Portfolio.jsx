@@ -1,54 +1,67 @@
 import { useState } from "react";
 import { FaGithub, FaLinkedin, FaCheck, FaCopy } from "react-icons/fa";
+import profilAndreas from "./assets/profilAndreas.png";
 
 import { MdEmail, MdLocationOn } from "react-icons/md";
 const EXPERIENCE = [
   {
-    period: "Saat ini",
+    period: "Current",
     title: "Software Developer",
     org: "RSU Tumpaan Medical Center",
-    body: "Membangun dan merawat sistem produksi: bed monitoring, manajemen rawat inap, absensi staf, pencarian pasien, dan modul pendaftaran online dengan pelacakan antrean near real-time.",
+    body: "Developing and maintaining production systems including an operational monitoring dashboard, online patient registration, bed monitoring, and a staff monitoring system to improve operational efficiency and support near real-time, data-driven decision making.",
     tags: ["Node.js", "Express", "Prisma", "MySQL", "React"],
   },
   {
-    period: "Sebelumnya",
+    period: "Previous",
     title: "Programming Lecturer",
     org: "Timedoor Academy",
-    body: "Mengajar dasar dan praktik pemrograman, membimbing peserta memahami konsep fundamental hingga penerapan proyek nyata.",
-    tags: ["Teaching", "Fundamentals"],
+    body: "Taught programming fundamentals and practice, guiding students from core concepts through to real-world project implementation using HTML, CSS, and JavaScript.",
+    tags: ["Html", "Css", "Javascript", "Teaching", "Fundamentals"],
   },
   {
-    period: "Awal karier",
+    period: "Previous",
     title: "Fullstack JavaScript Developer Bootcamp",
     org: "Course-Net Indonesia",
-    body: "Menyelesaikan pelatihan intensif fullstack JavaScript sebagai fondasi untuk berkarier sebagai software developer.",
-    tags: ["JavaScript", "Fullstack"],
+    body: "Completed an intensive Full Stack JavaScript program, designing and building a web-based inventory system covering product, category, stock, and transaction management. This project laid the foundation for understanding modern full stack development with React, Node.js, Express.js, Prisma ORM, and PostgreSQL.",
+    tags: ["JavaScript", "Node.js", "Express.js", "React", "Mysql"],
   },
 ];
 
 const PROJECTS = [
   {
-    title: "Pendaftaran Pasien Online",
+    title: "Real-time Monitoring Dashboard",
     status: "live",
-    desc: "Modul pendaftaran dengan pelacakan antrean near real-time, dirancang untuk mencegah data pasien ganda dan konflik nomor antrean lewat transaksi database dan penguncian baris.",
-    tags: ["Prisma Transactions", "Row-level Lock"],
+    desc: "Tracks patient data, ER services, laboratory results, registrations, and activity across all outpatient clinics — helping hospital staff monitor operations and make fast, accurate decisions.",
+    tags: ["Express.js", "React", "Prisma ORM", "MySQL", "Node.js"],
   },
   {
-    title: "Dashboard Bed Monitoring",
+    title: "Online Patient Registration",
     status: "live",
-    desc: "Dashboard operasional untuk memantau ketersediaan tempat tidur, rawat inap, dan pencarian pasien secara real-time bagi staf rumah sakit.",
-    tags: ["React", "Polling"],
+    desc: "Built a patient registration module that streamlines the sign-up process and tracks queues in near real time, helping staff deliver faster service, reduce wait times, and improve data accuracy.",
+    tags: ["Express.js", "React", "Prisma ORM", "MySQL", "Node.js"],
   },
   {
-    title: "Sistem Presensi Staf",
+    title: "Bed Monitoring Dashboard",
     status: "live",
-    desc: "Sistem presensi staf yang terintegrasi dengan database tunggal sebagai sumber kebenaran bersama untuk seluruh modul SIMRS.",
-    tags: ["Express", "MySQL", "RBAC"],
+    desc: "An operational dashboard for tracking bed availability, inpatient admissions, and patient lookups in real time for hospital staff.",
+    tags: ["Node.js", "Express.js", "React", "Prisma ORM", "MySQL"],
   },
   {
-    title: "Eksperimen Arsitektur Go",
+    title: "Staff Monitoring System",
+    status: "live",
+    desc: "A staff monitoring system integrated with a Solution X-100C fingerprint device to track attendance in real time and present accurate presence data for hospital operations.",
+    tags: ["Express", "MySQL", "React"],
+  },
+  {
+    title: "Inventory Management System",
+    status: "live",
+    desc: "A web-based inventory application providing product, category, stock, and transaction management through a REST API. Built with a structured backend architecture, JWT-based authentication, data validation, and query optimization using Prisma ORM.",
+    tags: ["Express.js", "React", "Prisma ORM", "PostgreSQL", "Node.js"],
+  },
+  {
+    title: "Go Architecture Experiment",
     status: "progress",
-    desc: "Reimplementasi fitur inti SIMRS menggunakan Go dengan Clean Architecture sebagai perbandingan langsung dengan implementasi Node.js/Express.",
+    desc: "Reimplementing core SIMRS features in Go with Clean Architecture, as a direct comparison against the existing Node.js/Express implementation.",
     tags: ["Go", "Gin", "GORM"],
   },
 ];
@@ -71,8 +84,8 @@ const SKILLS = [
   },
   { group: "Frontend", items: ["React.js", "Axios", "Polling / Real-time UI"] },
   {
-    group: "Keamanan & Praktik",
-    items: ["JWT Auth", "RBAC", "Validasi (Zod)"],
+    group: "Security & Practices",
+    items: ["JWT Auth", "RBAC", "Validation (Zod)"],
   },
 ];
 
@@ -98,11 +111,11 @@ const CONTACTS = [
 ];
 
 const NAV = [
-  { href: "#about", label: "Tentang" },
-  { href: "#experience", label: "Pengalaman" },
-  { href: "#projects", label: "Proyek" },
-  { href: "#skills", label: "Keahlian" },
-  { href: "#contact", label: "Kontak" },
+  { href: "#about", label: "About" },
+  { href: "#experience", label: "Experience" },
+  { href: "#projects", label: "Projects" },
+  { href: "#skills", label: "Skills" },
+  { href: "#contact", label: "Contact" },
 ];
 
 function CopyButton({ text }) {
@@ -114,9 +127,9 @@ function CopyButton({ text }) {
     });
   };
   return (
-    <button className="copy-btn" onClick={onCopy} aria-label={`Salin ${text}`}>
+    <button className="copy-btn" onClick={onCopy} aria-label={`Copy ${text}`}>
       {copied ? <FaCheck size={13} /> : <FaCopy size={13} />}
-      {copied ? "Tersalin" : "Salin"}
+      {copied ? "Copied" : "Copy"}
     </button>
   );
 }
@@ -131,9 +144,9 @@ export default function Portfolio() {
           --bg: #0b1120;
           --surface: #121a2c;
           --surface-2: #17223a;
-          --border: #223049;
+          --border: #162235;
           --text: #e9edf6;
-          --muted: #8a97b0;
+          --muted: #cccccc;
           --accent: #4ade80;
           --accent-dim: #1c3d2c;
           --mono: 'JetBrains Mono', monospace;
@@ -154,7 +167,7 @@ export default function Portfolio() {
         .page ::selection{ background: var(--accent-dim); color: var(--accent); }
         .page a:focus-visible, .page button:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
 
-        .eyebrow{ font-family:var(--mono); font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent); margin-bottom:10px; display:block; }
+        .eyebrow{ font-family:var(--mono); font-size:15.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent); margin-bottom:10px; display:block; }
 
         nav{ position:sticky; top:0; z-index:50; background:rgba(11,17,32,0.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); }
         nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; }
@@ -169,8 +182,21 @@ export default function Portfolio() {
         .hero{ padding:84px 0 60px; }
         .hero-grid{ display:grid; grid-template-columns:auto 1fr; gap:36px; align-items:center; }
         @media (max-width:680px){ .hero-grid{ grid-template-columns:1fr; text-align:left; } }
-        .avatar{ width:132px; height:132px; border-radius:20px; flex-shrink:0; background:linear-gradient(160deg, var(--surface-2), #0d1626 75%); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-weight:600; font-size:38px; color:var(--accent); }
-        .hero-name{ font-weight:800; font-size:clamp(28px,4.2vw,40px); line-height:1.15; margin-bottom:8px; }
+.avatar {
+  width: 220px;
+  height: 220px;
+  border-radius: 20px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}       
+  .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+} 
+  .hero-name{ font-weight:800; font-size:clamp(28px,4.2vw,40px); line-height:1.15; margin-bottom:8px; }
         .hero-role{ color:var(--muted); font-size:17px; margin-bottom:18px; max-width:56ch; }
         .hero-cta{ display:flex; gap:12px; flex-wrap:wrap; }
         .btn{ font-size:14px; font-weight:600; padding:11px 20px; border-radius:8px; border:1px solid var(--border); transition:.15s ease; cursor:pointer; }
@@ -188,15 +214,15 @@ export default function Portfolio() {
         .about-panel .muted{ color:var(--muted); }
 
         .timeline{ border-left:2px solid var(--border); margin-left:6px; }
-        .tl-item{ position:relative; padding:2px 0 32px 28px; }
+        .tl-item{ position:relative; padding:2px 0 32px 28px;}
         .tl-item:last-child{ padding-bottom:0; }
-        .tl-item::before{ content:""; position:absolute; left:-7px; top:5px; width:12px; height:12px; border-radius:50%; background:var(--bg); border:2px solid var(--accent); }
-        .tl-period{ font-family:var(--mono); font-size:12.5px; color:var(--muted); margin-bottom:5px; display:block; }
+        .tl-item::before{ content:""; position:absolute; left:-7px; top:5px; width:12px; height:12px; border-radius:50%; background:var(--accent); border:2px solid var(--accent); }
+        .tl-period{ font-family:var(--mono); font-size:15.5px; color:var(--muted); margin-bottom:5px; display:block; }
         .tl-title{ font-weight:700; font-size:17px; margin-bottom:6px; }
         .tl-org{ color:var(--accent); font-weight:600; font-size:14.5px; }
         .tl-body{ color:var(--muted); font-size:14.5px; max-width:64ch; margin-top:6px; }
-        .tl-tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
-        .tag{ font-size:12px; padding:4px 10px; border-radius:6px; border:1px solid var(--border); color:var(--muted); }
+        .tl-tags{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+        .tag{ font-size:12px; padding:4px 10px; border-radius:6px; border:1px solid var(--text); color:var(--muted); }
 
         .projects-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
         @media (max-width:720px){ .projects-grid{ grid-template-columns:1fr; } }
@@ -244,27 +270,29 @@ export default function Portfolio() {
             ))}
           </div>
           <div className="status-pill">
-            <span className="dot" /> Terbuka untuk peluang baru
+            <span className="dot" /> Open to new opportunities
           </div>
         </div>
       </nav>
 
       <header className="hero">
         <div className="wrap hero-grid">
-          <div className="avatar">AD</div>
+          <div className="avatar">
+            <img src={profilAndreas} alt="Andreas Lampah" srcset="" />
+          </div>
           <div>
-            <h1 className="hero-name">Andreas</h1>
+            <h1 className="hero-name">Andreas Lampah</h1>
             <p className="hero-role">
-              Fullstack Developer dengan fokus backend — membangun sistem yang
-              andal, dari arsitektur database sampai antarmuka yang mudah
-              dipakai.
+              Full Stack Developer focused on backend engineering — designing
+              REST APIs, managing databases, and building end-to-end
+              applications from backend to frontend with React.
             </p>
             <div className="hero-cta">
               <a href="#projects" className="btn btn-primary">
-                Lihat proyek
+                View projects
               </a>
               <a href="#contact" className="btn btn-ghost">
-                Hubungi saya
+                Get in touch
               </a>
             </div>
           </div>
@@ -273,28 +301,35 @@ export default function Portfolio() {
 
       <section id="about">
         <div className="wrap">
-          <span className="eyebrow">Tentang</span>
-          <h2 className="sec-title">Sedikit tentang saya</h2>
+          <span className="eyebrow">About</span>
+          <h2 className="sec-title">A bit about me</h2>
           <div className="about-panel">
             <p>
-              Saya seorang <strong>Software Developer</strong> yang saat ini
-              membangun dan merawat Sistem Informasi Manajemen Rumah Sakit
-              (SIMRS) — mulai dari dashboard operasional real-time, modul
-              pendaftaran pasien online dengan antrean live, sampai arsitektur
-              database yang menjadi satu sumber kebenaran untuk seluruh sistem.
+              I'm a Full Stack Developer with a primary focus on backend
+              development. I currently build and maintain a Hospital Information
+              System (SIMRS), covering an operational monitoring dashboard, an
+              online patient registration module, a bed monitoring dashboard,
+              and a staff monitoring system. I develop backend services that
+              read from the production SIMRS database using Prisma ORM and SQL
+              queries, turning that data into secure, efficient, and reliable
+              REST APIs, then integrate them with a React application to present
+              operational information in near real time.
             </p>
             <p className="muted">
-              Fokus utama saya ada di backend: autentikasi dan otorisasi,
-              validasi data, penanganan konflik data (race condition) dengan
-              transaksi database, hingga logging dan penanganan error yang rapi.
-              Di sisi frontend, saya terbiasa membangun antarmuka React yang
-              informatif dan mudah dipakai.
+              My core focus is backend development — designing REST APIs,
+              authentication and authorization, data validation, database
+              management, and logging and error handling to build services that
+              are secure, reliable, and easy to maintain. On the frontend, I use
+              React to build interfaces that connect to the backend through
+              APIs, presenting data in a way that's informative, responsive, and
+              easy to use.
             </p>
             <p className="muted">
-              Selain pekerjaan sehari-hari, saya sedang memperdalam{" "}
-              <strong>Go</strong> sebagai bahasa backend kedua, dan terbuka
-              untuk peran fullstack maupun backend di berbagai industri — tidak
-              terbatas pada kesehatan.
+              Alongside my day-to-day work, I'm continuing to deepen my skills
+              in <strong>Go</strong> as a second backend language. I'm committed
+              to continuous learning, sharpening my skills, staying current with
+              new technologies, and growing as a software engineer to build
+              higher-quality solutions with greater impact.
             </p>
           </div>
         </div>
@@ -302,8 +337,8 @@ export default function Portfolio() {
 
       <section id="experience">
         <div className="wrap">
-          <span className="eyebrow">EXPERIENCE</span>
-          <h2 className="sec-title">Perjalanan karier</h2>
+          <span className="eyebrow">Experience</span>
+          <h2 className="sec-title">Career journey</h2>
           <div className="timeline">
             {EXPERIENCE.map((e) => (
               <div className="tl-item" key={e.title}>
@@ -326,8 +361,8 @@ export default function Portfolio() {
 
       <section id="projects">
         <div className="wrap">
-          <span className="eyebrow">PROJECTS</span>
-          <h2 className="sec-title">Yang pernah saya bangun</h2>
+          <span className="eyebrow">Projects</span>
+          <h2 className="sec-title">What I've built</h2>
           <div className="projects-grid">
             {PROJECTS.map((p) => (
               <div className="proj-card" key={p.title}>
@@ -336,7 +371,7 @@ export default function Portfolio() {
                   <span
                     className={`badge ${p.status === "live" ? "badge-live" : "badge-progress"}`}
                   >
-                    {p.status === "live" ? "Produksi" : "Berjalan"}
+                    {p.status === "live" ? "Live" : "In progress"}
                   </span>
                 </div>
                 <div className="proj-desc">{p.desc}</div>
@@ -356,7 +391,7 @@ export default function Portfolio() {
       <section id="skills">
         <div className="wrap">
           <span className="eyebrow">Skills</span>
-          <h2 className="sec-title">Tools & teknologi</h2>
+          <h2 className="sec-title">Tools & technologies</h2>
           <div className="skills-grid">
             {SKILLS.map((s) => (
               <div className="skill-group" key={s.group}>
@@ -377,7 +412,7 @@ export default function Portfolio() {
       <section id="contact">
         <div className="wrap">
           <span className="eyebrow">Contact</span>
-          <h2 className="sec-title">Mari terhubung</h2>
+          <h2 className="sec-title">Let's connect</h2>
           <div className="contact-panel">
             <div className="contact-list">
               {CONTACTS.map((c) => {
@@ -410,7 +445,7 @@ export default function Portfolio() {
                     <MdLocationOn size={16} />
                   </span>
                   <div>
-                    <span className="field">Lokasi</span>
+                    <span className="field">Location</span>
                     <span className="value">Indonesia · remote-friendly</span>
                   </div>
                 </div>
