@@ -145,6 +145,7 @@ function Reveal({ children, className = "", delay = 0, as: Tag = "div" }) {
     const el = ref.current;
     if (!el) return;
     if (REDUCED_MOTION) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVisible(true);
       return;
     }
