@@ -4,8 +4,11 @@ import {
   FaLinkedin,
   FaCheck,
   FaCopy,
-  FaBars,
-  FaTimes,
+  FaUser,
+  FaBriefcase,
+  FaCode,
+  FaTools,
+  FaAddressCard,
 } from "react-icons/fa";
 import profilAndreas from "./assets/profilAndreas.png";
 
@@ -117,12 +120,18 @@ const CONTACTS = [
   },
 ];
 
+// Shared by the desktop nav links and the mobile bottom tab bar
 const NAV = [
-  { href: "#about", label: "About" },
-  { href: "#experience", label: "Experience" },
-  { href: "#projects", label: "Projects" },
-  { href: "#skills", label: "Skills" },
-  { href: "#contact", label: "Contact" },
+  { href: "#about", id: "about", label: "About", icon: FaUser },
+  {
+    href: "#experience",
+    id: "experience",
+    label: "Experience",
+    icon: FaBriefcase,
+  },
+  { href: "#projects", id: "projects", label: "Projects", icon: FaCode },
+  { href: "#skills", id: "skills", label: "Skills", icon: FaTools },
+  { href: "#contact", id: "contact", label: "Contact", icon: FaAddressCard },
 ];
 
 const ROLES = [
@@ -298,13 +307,37 @@ function useTilt(max = 7) {
   return { onMouseMove, onMouseLeave };
 }
 
+/* ---------- Tracks which section is currently in view, for the bottom tab bar ---------- */
+function useActiveSection(ids) {
+  const [active, setActive] = useState(ids[0]);
+  useEffect(() => {
+    const observers = [];
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setActive(id);
+        },
+        { rootMargin: "-40% 0px -50% 0px", threshold: 0 },
+      );
+      io.observe(el);
+      observers.push(io);
+    });
+    return () => observers.forEach((io) => io.disconnect());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return active;
+}
+
 export default function Portfolio() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const pageRef = useRef(null);
+  const navRef = useRef(null);
   const magnetPrimary = useMagnetic(0.25);
   const magnetGhost = useMagnetic(0.25);
   const tilt = useTilt(6);
+  const activeSection = useActiveSection(NAV.map((n) => n.id));
 
   useEffect(() => {
     const t = requestAnimationFrame(() => setLoaded(true));
@@ -330,11 +363,13 @@ export default function Portfolio() {
     return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
-  // Scroll progress bar
+  // Scroll progress bar + navbar auto-hide (hides going down, reappears going up)
   useEffect(() => {
     const bar = document.getElementById("scroll-progress-bar");
-    if (!bar) return;
+    const nav = navRef.current;
+    let lastY = window.scrollY;
     let raf = null;
+
     const onScroll = () => {
       if (raf) return;
       raf = requestAnimationFrame(() => {
@@ -342,7 +377,18 @@ export default function Portfolio() {
         const scrolled = h.scrollTop;
         const max = h.scrollHeight - h.clientHeight;
         const pct = max > 0 ? (scrolled / max) * 100 : 0;
-        bar.style.width = `${pct}%`;
+        if (bar) bar.style.width = `${pct}%`;
+
+        if (nav) {
+          const goingDown = scrolled > lastY;
+          const pastThreshold = scrolled > 96;
+          if (goingDown && pastThreshold) {
+            nav.classList.add("nav-hidden");
+          } else {
+            nav.classList.remove("nav-hidden");
+          }
+        }
+        lastY = scrolled;
         raf = null;
       });
     };
@@ -372,6 +418,8 @@ export default function Portfolio() {
           --accent-dim: #1c3d2c;
           --mono: 'JetBrains Mono', monospace;
           --sans: 'Inter', sans-serif;
+          --nav-h: 64px;
+          --tabbar-h: 66px;
         }
         *{ box-sizing:border-box; }
         .page{
@@ -386,6 +434,7 @@ export default function Portfolio() {
           min-height:100vh;
           overflow-x:hidden;
           animation: gridPan 90s linear infinite;
+          padding-top: var(--nav-h);
           --mx: 50%;
           --my: 30%;
         }
@@ -405,7 +454,7 @@ export default function Portfolio() {
         .scroll-progress{
           position:fixed; top:0; left:0; height:3px; width:0%;
           background: linear-gradient(90deg, var(--accent), var(--accent-2));
-          z-index:100;
+          z-index:110;
           box-shadow: 0 0 10px rgba(74,222,128,.5);
           transition: width .08s linear;
         }
@@ -458,8 +507,16 @@ export default function Portfolio() {
         }
         .reveal-visible .split-word{ transform:translateY(0); }
 
-        nav{ position:sticky; top:0; z-index:50; background:rgba(11,17,32,0.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); transition: border-color .3s ease; }
-        nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:64px; flex-wrap:wrap; }
+        /* ---------- Top navbar: fixed, auto-hides on scroll down ---------- */
+        nav{
+          position:fixed; top:0; left:0; right:0; height:var(--nav-h);
+          z-index:100;
+          background:rgba(11,17,32,0.85); backdrop-filter:blur(10px);
+          border-bottom:1px solid var(--border);
+          transition: transform .35s cubic-bezier(.4,0,.2,1), border-color .3s ease;
+        }
+        nav.nav-hidden{ transform:translateY(-100%); }
+        nav .wrap{ display:flex; align-items:center; justify-content:space-between; height:var(--nav-h); }
         .logo{ font-weight:800; font-size:16px; }
         .logo span{ color:var(--accent); }
         .navlinks{ display:flex; gap:26px; font-size:14px; color:var(--muted); }
@@ -474,31 +531,50 @@ export default function Portfolio() {
         .navlinks a:hover::after{ width:100%; }
         .status-pill{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); border:1px solid var(--border); padding:6px 13px; border-radius:20px; transition: border-color .2s ease; }
         .status-pill:hover{ border-color:var(--accent-dim); }
-        .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); animation: dotPulse 2.2s ease-in-out infinite; }
+        .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); animation: dotPulse 2.2s ease-in-out infinite; flex-shrink:0; }
         @keyframes dotPulse{
           0%, 100%{ box-shadow:0 0 0 0 rgba(74,222,128,.55); }
           50%{ box-shadow:0 0 0 6px rgba(74,222,128,0); }
         }
 
-        .nav-toggle{ display:none; }
-        @media (max-width:640px){
-          nav .wrap{ flex-wrap:wrap; row-gap:10px; padding-top:12px; padding-bottom:12px; height:auto; }
-          .logo{ order:1; }
-          .status-pill{ order:2; }
-          .nav-toggle{
-            display:flex; align-items:center; justify-content:center;
-            gap:8px; width:100%; order:3;
-            padding:10px 0; border-radius:8px;
-            border:1px solid var(--border); background:transparent; color:var(--text);
-            cursor:pointer; font-size:13px; font-weight:600;
-            transition: border-color .2s ease, color .2s ease;
-          }
-          .nav-toggle:hover{ border-color:var(--accent); color:var(--accent); }
-          .navlinks{ display:none; flex-direction:column; align-items:center; gap:14px; width:100%; order:4; padding:14px 0 4px; }
-          .navlinks.open{ display:flex; animation: fadeInUp .3s ease both; }
+        @media (max-width:768px){
+          .navlinks{ display:none; }
+          .status-pill .status-text{ display:none; }
+          .status-pill{ padding:8px; }
         }
 
-        .hero{ padding:84px 0 60px; position:relative; }
+        /* ---------- Mobile bottom tab bar ---------- */
+        .tabbar{
+          display:none;
+          position:fixed; left:0; right:0; bottom:0; z-index:100;
+          height:calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+          padding-bottom:env(safe-area-inset-bottom);
+          background:rgba(11,17,32,0.92); backdrop-filter:blur(14px);
+          border-top:1px solid var(--border);
+          transition: transform .35s cubic-bezier(.4,0,.2,1);
+        }
+        @media (max-width:768px){
+          .tabbar{ display:flex; }
+          .page{ padding-bottom: var(--tabbar-h); }
+        }
+        .tabbar-inner{
+          display:flex; height:var(--tabbar-h); max-width:920px; margin:0 auto;
+        }
+        .tab-item{
+          flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+          gap:4px; color:var(--muted); font-size:11px; font-weight:600;
+          position:relative; transition: color .2s ease;
+        }
+        .tab-item svg{ transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+        .tab-item.active{ color:var(--accent); }
+        .tab-item.active svg{ transform:translateY(-2px) scale(1.08); }
+        .tab-indicator{
+          position:absolute; top:2px; width:18px; height:3px; border-radius:2px;
+          background:var(--accent); transform:scaleX(0); transition: transform .25s ease;
+        }
+        .tab-item.active .tab-indicator{ transform:scaleX(1); }
+
+        .hero{ padding:52px 0 60px; position:relative; }
         .hero-grid{ display:grid; grid-template-columns:auto 1fr; gap:36px; align-items:center; }
         @media (max-width:680px){ .hero-grid{ grid-template-columns:1fr; text-align:left; } }
 
@@ -582,7 +658,7 @@ export default function Portfolio() {
         .btn-ghost{ color:var(--text); background:transparent; }
         .btn-ghost:hover{ border-color:var(--accent); color:var(--accent); }
 
-        section{ padding:56px 0; }
+        section{ padding:56px 0; scroll-margin-top: calc(var(--nav-h) + 16px); }
         .sec-title{ font-weight:800; font-size:clamp(22px,3vw,27px); margin-bottom:26px; }
 
         .about-panel{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:30px; transition: border-color .25s ease; }
@@ -668,33 +744,26 @@ export default function Portfolio() {
           .avatar, .hero-text, .hero-cta{ opacity:1; animation:none; }
           .dot, .badge-live::before, .role-caret{ animation:none; }
           .hero-name{ animation:none; background:none; -webkit-background-clip:initial; background-clip:initial; color:var(--text); }
+          nav{ transition:none; }
         }
       `}</style>
 
-      <nav>
+      <nav ref={navRef}>
         <div className="wrap">
           <div className="logo">
             Andreas<span>.</span>
           </div>
-          <div className={`navlinks ${menuOpen ? "open" : ""}`}>
+          <div className="navlinks">
             {NAV.map((n) => (
-              <a key={n.href} href={n.href} onClick={() => setMenuOpen(false)}>
+              <a key={n.href} href={n.href}>
                 {n.label}
               </a>
             ))}
           </div>
           <div className="status-pill">
-            <span className="dot" /> Open to new opportunities
+            <span className="dot" />
+            <span className="status-text">Open to new opportunities</span>
           </div>
-          <button
-            className="nav-toggle"
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-          >
-            {menuOpen ? <FaTimes size={14} /> : <FaBars size={14} />}
-            {menuOpen ? "Close" : "Menu"}
-          </button>
         </div>
       </nav>
 
@@ -927,6 +996,27 @@ export default function Portfolio() {
       <footer>
         <div className="wrap">© 2026 Andreas.</div>
       </footer>
+
+      {/* Mobile-only bottom tab bar */}
+      <nav className="tabbar" aria-label="Section navigation">
+        <div className="tabbar-inner">
+          {NAV.map((n) => {
+            const Icon = n.icon;
+            const isActive = activeSection === n.id;
+            return (
+              <a
+                key={n.id}
+                href={n.href}
+                className={`tab-item ${isActive ? "active" : ""}`}
+              >
+                <span className="tab-indicator" />
+                <Icon size={17} />
+                {n.label}
+              </a>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
